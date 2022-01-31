@@ -1,19 +1,24 @@
 using UnityEngine;
 
 public class ProductionSelectionListVue : MonoBehaviour {
+  [SerializeField] private RectTransform parent;
   [SerializeField] private ProdSelectSectionTitleVue sectionTitlePrefab;
+
+  [Header("Buildings")]
   [SerializeField] private ProdSelectDistrictSingleVue districtSinglePrefab;
   [SerializeField] private ProdSelectDistrictEmptyVue districtEmptyPrefab;
   [SerializeField] private ProdSelectDistrictInfrastructureVue districtInfrastructurePrefab;
   [SerializeField] private ProdSelectInfrastructureVue infrastructurePrefab;
 
-  [SerializeField] private RectTransform parent;
+  [Header("Units")]
+  [SerializeField] private ProdSelectUnitVue unitPrefab;
 
-  private float sectionTitleHeight;
-  private float districtSingleHeight;
-  private float districtEmptyHeight;
-  private float districtInfrastructureHeight;
-  private float infrastructureHeight;
+  private float sectionTitleHeight,
+                districtSingleHeight,
+                districtEmptyHeight,
+                districtInfrastructureHeight,
+                infrastructureHeight,
+                unitHeight;
 
   void Awake() {
     sectionTitleHeight = ((RectTransform)sectionTitlePrefab.transform).sizeDelta.y;
@@ -21,28 +26,19 @@ public class ProductionSelectionListVue : MonoBehaviour {
     districtEmptyHeight = ((RectTransform)districtEmptyPrefab.transform).sizeDelta.y;
     districtInfrastructureHeight = ((RectTransform)districtInfrastructurePrefab.transform).sizeDelta.y;
     infrastructureHeight = ((RectTransform)infrastructurePrefab.transform).sizeDelta.y;
+    unitHeight = ((RectTransform)unitPrefab.transform).sizeDelta.y;
   }
 
-  public void Draw(ProductionManager manager) {
+  public void Draw(ProductionManager production) {
     SceneHelper.DestroyChildrenInParent(parent);
 
     float h = 0f;
-    h = DrawDistrictAndBuildingList(manager, h);
-    // TODO: DrawUnitList();
+    h = DrawDistrictAndBuildingList(production, h);
+    h = DrawUnitList(production, h);
     //? DrawWonderList();
     //? Draw projects
 
     parent.sizeDelta = new Vector2(0, h);
-  }
-
-  private float DrawDistrictAndBuildingList(ProductionManager production, float h) {
-    h = InstantiateSectionTitle("Districts & Buildings", h);
-
-    ComplexBuilding[] districts = production.ComplexBuildingsWithHQ;
-    for (int i = 0; i < districts.Length; ++i)
-      h = InstantiateDistrict(districts[i], h, production);
-
-    return h;
   }
 
   private float InstantiateSectionTitle(string title, float h) {
@@ -52,6 +48,17 @@ public class ProductionSelectionListVue : MonoBehaviour {
     instance.Write(title);
 
     return h + sectionTitleHeight;
+  }
+
+  #region Draw Districts & Infrastructure
+  private float DrawDistrictAndBuildingList(ProductionManager production, float h) {
+    h = InstantiateSectionTitle("Districts & Buildings", h);
+
+    ComplexBuilding[] districts = production.ComplexBuildingsWithHQ;
+    for (int i = 0; i < districts.Length; ++i)
+      h = InstantiateDistrict(districts[i], h, production);
+
+    return h;
   }
 
   private float InstantiateDistrict(ComplexBuilding district, float h, ProductionManager production) {
@@ -113,4 +120,27 @@ public class ProductionSelectionListVue : MonoBehaviour {
 
     return h + districtEmptyHeight;
   }
+  #endregion Draw Districts & Infrastructure
+
+
+  #region Draw Units
+  private float DrawUnitList(ProductionManager production, float h) {
+    h = InstantiateSectionTitle("Units", h);
+
+    ProductionUnit[] units = production.Units;
+    for (int i = 0; i < units.Length; ++i)
+      h = InstantiateUnit(units[i], h, production);
+
+    return h;
+  }
+
+  private float InstantiateUnit(ProductionUnit unit, float h, ProductionManager production) {
+    ProdSelectUnitVue instance = Instantiate(unitPrefab);
+    instance.transform.position = new Vector3(0f, -h, 0f);
+    instance.transform.SetParent(parent, false);
+    instance.Write(unit, production.GetProductionTime(unit.ProductionCost), production);
+
+    return h + unitHeight;
+  }
+  #endregion Draw Units
 }

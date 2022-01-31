@@ -26,6 +26,7 @@ public class GameManager : MonoBehaviour {
   private HexGridManager _grid;
   private MegafactoryManager _megafactory;
   private YieldManager _yield;
+  private UnitsManager _units;
   private ProductionManager _production;
   private TurnManager _turn;
 
