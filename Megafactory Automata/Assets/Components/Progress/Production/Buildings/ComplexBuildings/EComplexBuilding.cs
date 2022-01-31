@@ -42,7 +42,7 @@ public static class EComplexBuildingExtension {
         return new EInfrastructure[] {
           EInfrastructure.LIBRARY,
           EInfrastructure.UNIVERSITY,
-          EInfrastructure.EXTRACTOR
+          EInfrastructure.RESEARCH_LAB
         };
     }
 
