@@ -8,12 +8,17 @@ public class MegafactoryManager {
   public Yield GetYieldPerTurn() { return _buildings.GetYieldPerTurn(); }
   #endregion Buildings
 
+  #region Units
+  private UnitsManager _units;
+  #endregion Units
+
 
   public MegafactoryManager(MegafactoryVue vue, HexGridManager grid) {
     _vue = vue;
     _grid = grid;
 
     _buildings = new BuildingsManager();
+    _units = new UnitsManager();
   }
 
   public void Initialize() {
@@ -26,5 +31,10 @@ public class MegafactoryManager {
     _buildings.AddComplexBuilding(building, tile);
     // TODO: affect neighbouring buildings
     _vue.DrawBuilding(building);
+  }
+
+  public void AddUnit(ProductionUnit prodUnit) {
+    Unit unit = _units.AddUnit(prodUnit);
+    _vue.DrawUnit(unit, Headquarters.Coordinates);
   }
 }

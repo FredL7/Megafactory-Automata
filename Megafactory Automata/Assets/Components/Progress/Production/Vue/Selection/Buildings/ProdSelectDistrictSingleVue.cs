@@ -18,7 +18,7 @@ public class ProdSelectDistrictSingleVue : MonoBehaviour, IPointerClickHandler {
   }
 
   public void OnPointerClick(PointerEventData e) {
-    if (e.pointerId == -1) {
+    if (e.pointerId == -1) { //? Only work with a mouse
       ProductionComplexBuildingOrder order = new ProductionComplexBuildingOrder(_building);
       _production.SetProductionOrderWithTileSelect(order);
     }

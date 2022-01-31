@@ -19,6 +19,9 @@ public class ProductionManager : ITurnProgressible, ITileSelectionCallback {
   private ComplexBuilding[] _complexBuildingsWithHQ;
   public ComplexBuilding[] ComplexBuildingsWithHQ { get { return _complexBuildingsWithHQ; } }
 
+  private ProductionUnit[] _units;
+  public ProductionUnit[] Units { get { return _units; } }
+
   public ProductionManager(
     ProductionCurrentVue currentVue, ProductionSelectionVue selectVue,
     TileSelectionCtrl tileSelectCtrl,
@@ -37,6 +40,7 @@ public class ProductionManager : ITurnProgressible, ITileSelectionCallback {
     _currentOrder = null;
 
     InitDistricts();
+    InitUnits();
 
     _currentVue.SetNoOrder();
     _selectVue.DrawProductionElementsList(this);
@@ -57,17 +61,12 @@ public class ProductionManager : ITurnProgressible, ITileSelectionCallback {
       _complexBuildingsWithHQ[i + 1] = _complexBuildings[i];
   }
 
-  /*public ComplexBuilding[] GetComplexBuildingsAvailForProd() {
-    List<ComplexBuilding> list = new List<ComplexBuilding>(_complexBuildings.Length + 1);
-
-    list.Add(_megafactory.Headquarters);
-    for (int i = 0; i < _complexBuildings.Length; ++i)
-      //? Send all and change ui selon state
-      if (!_complexBuildings[i].Built || _complexBuildings[i].HasInfrastructureToBuild())
-        list.Add(_complexBuildings[i]);
-
-    return list.ToArray();
-  }*/
+  private void InitUnits() {
+    ProductionUnitData[] _d = ProductionUnitDB.Instance.List;
+    _units = new ProductionUnit[_d.Length];
+    for (int i = 0; i < _d.Length; ++i)
+      _units[i] = new ProductionUnit(_d[i]);
+  }
 
   public int GetProductionTime(int productionCost) {
     return Mathf.CeilToInt((float)(productionCost - _yield.ProductionAccumulated) / (float)_yield.ProductionPerTurn);
@@ -122,5 +121,9 @@ public class ProductionManager : ITurnProgressible, ITileSelectionCallback {
   //? Rename to AddBuildingToMegafactory
   public void FinishComplexBuildingOrder(ComplexBuilding building, HexTile tile) {
     _megafactory.AddComplexBuilding(building, tile);
+  }
+
+  public void FinishUnitOrder(ProductionUnit unit) {
+    _megafactory.AddUnit(unit);
   }
 }
